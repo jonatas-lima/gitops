@@ -28,16 +28,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install semantic-release
-        run: npm install --no-save semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
-
       - name: Create semantic-release config
         run: |
-          cat <<'EOF' > .releaserc.json
+          cat <<'SREOF' > .releaserc.json
           {
             "branches": ["main"],
             "plugins": [
@@ -53,10 +46,14 @@ jobs:
               "@semantic-release/github"
             ]
           }
-          EOF
+          SREOF
 
       - name: Run semantic-release
         id: semantic
-        run: npx semantic-release
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
